@@ -38,11 +38,10 @@ int main(int argc, char **argv)
     application.setApplicationName("CutePaste Desktop Console Frontend");
 
     QTextStream standardOutputStream(stdout);
-
+    QNetworkRequest networkRequest;
     QFile dataFile;
     dataFile.open(stdin, QIODevice::ReadOnly);
 
-    QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setUrl(QUrl("http://sandbox.paste.kde.org/api/json/create"));
 
@@ -50,43 +49,33 @@ int main(int argc, char **argv)
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, &dataFile));
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
         QJsonDocument jsonDocument = QJsonDocument::fromJson(networkReplyScopedPointer->readAll());
-
         if (!jsonDocument.isObject())
             return;
         
         QJsonObject jsonObject = jsonDocument.object();
         QJsonValue identifierValue = jsonObject.value(QStringLiteral("id"));
 
-        if (identifierValue.isString()) {
-            standardOutputStream << identifierValue.toString();
-            endl(standardOutputStream);
-        }
+        if (identifierValue.isString())
+            endl(standardOutputStream << identifierValue.toString());
     });
 
     QObject::connect(networkReplyScopedPointer.data(), static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error), [&](QNetworkReply::NetworkError networkReplyError) {
-        if (networkReplyError != QNetworkReply::NoError) {
-            QTextStream standardOutputStream2(stdout);
-            standardOutputStream2 << networkReplyScopedPointer->errorString();
-            endl(standardOutputStream);
-        }
+        if (networkReplyError != QNetworkReply::NoError)
+            endl(standardOutputStream << networkReplyScopedPointer->errorString());
     });
 
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::sslErrors, [&](QList<QSslError> networkReplySslErrors) {
         if (!networkReplySslErrors.isEmpty()) {
-            foreach (const QSslError &networkReplySslError, networkReplySslErrors) {
-                standardOutputStream << networkReplySslError.errorString();
-                endl(standardOutputStream);
-            }
+            foreach (const QSslError &networkReplySslError, networkReplySslErrors)
+                endl(standardOutputStream << networkReplySslError.errorString());
         }
     });
 
     bool returnValue = application.exec();
 
     dataFile.close();
-    if (dataFile.error() != QFileDevice::NoError) {
-        standardOutputStream << dataFile.errorString();
-        endl(standardOutputStream);
-    }
+    if (dataFile.error() != QFileDevice::NoError)
+        endl(standardOutputStream << dataFile.errorString());
 
     return returnValue;
 }
