@@ -1,0 +1,23 @@
+*~
+*.swp
+*.so
+*.o
+*.a
+.svn/
+build
+release-build
+Doxyfile
+*.patch
+.gdb_history
+*.kate-swp
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+#QtCreator
+qtcreator-build
+

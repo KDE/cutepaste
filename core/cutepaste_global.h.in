@@ -1,0 +1,51 @@
+/******************************************************************************
+ * CutePaste - Client application for paste.kde.org
+ * Copyright (c) 2013 Laszlo Papp <lpapp@kde.org>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+#ifndef CUTEPASTE_CORE_GLOBAL_H
+#define CUTEPASTE_CORE_GLOBAL_H
+
+#define CUTEPASTE_INSTALL_PREFIX    QString("${CMAKE_INSTALL_PREFIX}")
+#define CUTEPASTE_SHARE_INSTALL_DIR QString("${SHARE_INSTALL_DIR}")
+#define CUTEPASTE_LIB_INSTALL_DIR   QString("${LIB_INSTALL_DIR}")
+
+#define CUTEPASTE_VERSION_MAJOR     ${CUTEPASTE_VERSION_MAJOR}
+#define CUTEPASTE_VERSION_MINOR     ${CUTEPASTE_VERSION_MINOR}
+#define CUTEPASTE_VERSION_PATCH     ${CUTEPASTE_VERSION_PATCH}
+#define CUTEPASTE_VERSION_NAME      QString("${CUTEPASTE_VERSION_NAME}")
+#define CUTEPASTE_VERSION_STRING    QString("${CUTEPASTE_VERSION_STRING}")
+
+#define CUTEPASTE_PLATFORM_NAME     "Cute Paste Platform"
+
+#define CUTEPASTE_ARCHITECTURE       QString("${CUTEPASTE_ARCHITECTURE}")
+
+#include <QtCore/QString>
+
+namespace CurlPasteCore
+{
+    class Global
+    {
+        public:
+            static QString versionString()
+            {
+                return CURLPASTE_VERSION_STRING;
+            }
+    };
+}
+
+#endif
