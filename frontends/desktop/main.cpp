@@ -63,11 +63,11 @@ int main(int argc, char **argv)
         }
     });
 
-    QObject::connect(networkReplyScopedPointer.data(), static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), [&](QNetworkReply::NetworkError networkReplyError) {
+    QObject::connect(networkReplyScopedPointer.data(), static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error), [&](QNetworkReply::NetworkError networkReplyError) {
         if (networkReplyError != QNetworkReply::NoError) {
             QTextStream standardOutputStream2(stdout);
             standardOutputStream2 << networkReplyScopedPointer->errorString();
-            // endl(standardOutputStream);
+            endl(standardOutputStream);
         }
     });
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
         if (!networkReplySslErrors.isEmpty()) {
             foreach (const QSslError &networkReplySslError, networkReplySslErrors) {
                 standardOutputStream << networkReplySslError.errorString();
-                // endl(standardOutputStream);
+                endl(standardOutputStream);
             }
         }
     });
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
     dataFile.close();
     if (dataFile.error() != QFileDevice::NoError) {
         standardOutputStream << dataFile.errorString();
-        // endl(standardOutputStream);
+        endl(standardOutputStream);
     }
 
     return returnValue;
