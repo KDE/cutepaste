@@ -29,6 +29,7 @@
 #include <QScopedPointer>
 #include <QTextStream>
 #include <QList>
+#include <QString>
 #include <QCoreApplication>
 
 int main(int argc, char **argv)
@@ -40,7 +41,8 @@ int main(int argc, char **argv)
     QTextStream standardOutputStream(stdout);
     QNetworkRequest networkRequest;
     QFile dataFile;
-    dataFile.open(stdin, QIODevice::ReadOnly);
+    QString firstArgument = application::arguments().at(1)
+    dataFile.open(firstArgument.isEmpty() ? stdin : firstArgument, QIODevice::ReadOnly);
 
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setUrl(QUrl("http://sandbox.paste.kde.org/api/json/create"));
