@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
     QTextStream standardOutputStream(stdout);
     QFile dataFile;
-    QString firstArgument = QCoreApplication::arguments().at(1);
+    QString firstArgument = QCoreApplication::arguments().size() < 2 ? QString() : QCoreApplication::arguments().at(1);
     if (!firstArgument.isEmpty()) {
         dataFile.setFileName(firstArgument);
         dataFile.open(QIODevice::ReadOnly);
