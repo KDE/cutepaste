@@ -38,7 +38,6 @@ int main(int argc, char **argv)
     application.setApplicationName("CutePaste Desktop Console Frontend");
 
     QTextStream standardOutputStream(stdout);
-    QNetworkRequest networkRequest;
     QFile dataFile;
     QString firstArgument = QCoreApplication::arguments().at(1);
     if (!firstArgument.isEmpty()) {
@@ -53,11 +52,13 @@ int main(int argc, char **argv)
     QJsonDocument requestJsonDocument;
     QJsonObject requestJsonObject;
 
-    requestJsonObject.insert(QStringLiteral("data"), QString(pasteTextByteArray));
+    requestJsonObject.insert(QStringLiteral("data"), QString::fromUtf8(pasteTextByteArray));
     requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("Text"));
 
+    QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
-    networkRequest.setUrl(QUrl("http://sandbox.paste.kde.org/api/json/create"));
+    networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    networkRequest.setUrl(QUrl("http://sandbox.pastebin.kde.org/api/json/create"));
 
     QNetworkAccessManager networkAccessManager;
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, &dataFile));
