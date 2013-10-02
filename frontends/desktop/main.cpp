@@ -25,11 +25,14 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonParseError>
 #include <QFile>
 #include <QScopedPointer>
 #include <QTextStream>
 #include <QStringList>
 #include <QCoreApplication>
+
+#include <QDebug>
 
 int main(int argc, char **argv)
 {
@@ -64,15 +67,20 @@ int main(int argc, char **argv)
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, requestJsonDocument.toJson()));
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
 
-        QJsonDocument replyJsonDocument = QJsonDocument::fromJson(networkReplyScopedPointer->readAll());
-        if (!replyJsonDocument.isObject())
+        QJsonParseError jsonParseError;
+        QByteArray replyJsonByteArray = networkReplyScopedPointer->readAll();
+        QJsonDocument replyJsonDocument = QJsonDocument::fromJson(replyJsonByteArray, &jsonParseError);
+        if (!replyJsonDocument.isObject()) {
+            qDebug() << "Reply error:" << jsonParseError.errorString();
             return;
+        }
         
         QJsonObject replyJsonObject = replyJsonDocument.object();
-        QJsonValue identifierValue = replyJsonObject.value(QStringLiteral("id"));
+        QJsonValue identifierValue = replyJsonObject.value(QStringLiteral("result")).toObject().value(QStringLiteral("id"));
 
         if (identifierValue.isString())
-            endl(standardOutputStream << identifierValue.toString());
+            endl(standardOutputStream << "http://sandbox.pastebin.kde.org/" << identifierValue.toString());
+
         QCoreApplication::quit();
     });
 
