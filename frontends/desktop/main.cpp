@@ -58,10 +58,12 @@ int main(int argc, char **argv)
 
     QJsonDocument requestJsonDocument(requestJsonObject);
 
+    QString baseUrlString = QStringLiteral("http://pastebin.kde.org");
+
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    networkRequest.setUrl(QUrl("http://sandbox.pastebin.kde.org/api/json/create"));
+    networkRequest.setUrl(QUrl(baseUrlString + "/api/json/create"));
 
     QNetworkAccessManager networkAccessManager;
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, requestJsonDocument.toJson()));
@@ -79,7 +81,7 @@ int main(int argc, char **argv)
         QJsonValue identifierValue = replyJsonObject.value(QStringLiteral("result")).toObject().value(QStringLiteral("id"));
 
         if (identifierValue.isString())
-            endl(standardOutputStream << "http://sandbox.pastebin.kde.org/" << identifierValue.toString());
+            endl(standardOutputStream << baseUrlString << identifierValue.toString());
 
         QCoreApplication::quit();
     });
