@@ -49,11 +49,11 @@ int main(int argc, char **argv)
 
     QByteArray pasteTextByteArray = dataFile.readAll();
 
-    QJsonDocument requestJsonDocument;
     QJsonObject requestJsonObject;
-
     requestJsonObject.insert(QStringLiteral("data"), QString::fromUtf8(pasteTextByteArray));
-    requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("Text"));
+    requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("text"));
+
+    QJsonDocument requestJsonDocument(requestJsonObject);
 
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
@@ -61,8 +61,9 @@ int main(int argc, char **argv)
     networkRequest.setUrl(QUrl("http://sandbox.pastebin.kde.org/api/json/create"));
 
     QNetworkAccessManager networkAccessManager;
-    QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, &dataFile));
+    QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, requestJsonDocument.toJson()));
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
+
         QJsonDocument replyJsonDocument = QJsonDocument::fromJson(networkReplyScopedPointer->readAll());
         if (!replyJsonDocument.isObject())
             return;
@@ -72,6 +73,7 @@ int main(int argc, char **argv)
 
         if (identifierValue.isString())
             endl(standardOutputStream << identifierValue.toString());
+        QCoreApplication::quit();
     });
 
     QObject::connect(networkReplyScopedPointer.data(), static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error), [&](QNetworkReply::NetworkError networkReplyError) {
