@@ -28,8 +28,7 @@
 #include <QFile>
 #include <QScopedPointer>
 #include <QTextStream>
-#include <QList>
-#include <QString>
+#include <QStringList>
 #include <QCoreApplication>
 
 int main(int argc, char **argv)
@@ -41,8 +40,21 @@ int main(int argc, char **argv)
     QTextStream standardOutputStream(stdout);
     QNetworkRequest networkRequest;
     QFile dataFile;
-    QString firstArgument = application::arguments().at(1)
-    dataFile.open(firstArgument.isEmpty() ? stdin : firstArgument, QIODevice::ReadOnly);
+    QString firstArgument = QCoreApplication::arguments().at(1);
+    if (!firstArgument.isEmpty()) {
+        dataFile.setFileName(firstArgument);
+        dataFile.open(QIODevice::ReadOnly);
+    } else {
+        dataFile.open(stdin, QIODevice::ReadOnly);
+    }
+
+    QByteArray pasteTextByteArray = dataFile.readAll();
+
+    QJsonDocument requestJsonDocument;
+    QJsonObject requestJsonObject;
+
+    requestJsonObject.insert(QStringLiteral("data"), QString(pasteTextByteArray));
+    requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("Text"));
 
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setUrl(QUrl("http://sandbox.paste.kde.org/api/json/create"));
@@ -50,12 +62,12 @@ int main(int argc, char **argv)
     QNetworkAccessManager networkAccessManager;
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, &dataFile));
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
-        QJsonDocument jsonDocument = QJsonDocument::fromJson(networkReplyScopedPointer->readAll());
-        if (!jsonDocument.isObject())
+        QJsonDocument replyJsonDocument = QJsonDocument::fromJson(networkReplyScopedPointer->readAll());
+        if (!replyJsonDocument.isObject())
             return;
         
-        QJsonObject jsonObject = jsonDocument.object();
-        QJsonValue identifierValue = jsonObject.value(QStringLiteral("id"));
+        QJsonObject replyJsonObject = replyJsonDocument.object();
+        QJsonValue identifierValue = replyJsonObject.value(QStringLiteral("id"));
 
         if (identifierValue.isString())
             endl(standardOutputStream << identifierValue.toString());
