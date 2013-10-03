@@ -78,9 +78,14 @@ int main(int argc, char **argv)
         }
         
         QJsonObject replyJsonObject = replyJsonDocument.object();
-        QJsonValue identifierValue = replyJsonObject.value(QStringLiteral("result")).toObject().value(QStringLiteral("id"));
+        QJsonValue resultValue = replyJsonObject.value(QStringLiteral("result"));
 
-        if (identifierValue.isString())
+        if (!resultValue.isObject())
+            QCoreApplication::quit();
+
+        QJsonValue identifierValue = resultValue.toObject().value(QStringLiteral("id"));
+
+        if (!identifierValue.isString())
             endl(standardOutputStream << baseUrlString << identifierValue.toString());
 
         QCoreApplication::quit();
