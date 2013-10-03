@@ -22,7 +22,7 @@ project(CutePaste)
 
 option(BUILD_CUTEPASTE_DESKTOP "Build CutePaste for Desktop" ON)
 
-SET(CMAKE_CXX_FLAGS "-Wall -std=c++11")
+SET(CMAKE_CXX_FLAGS "-Wall -Wpedantic -std=c++11")
 SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -O2 -g")
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O2")
 SET(CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS} -g3 -ggdb -O0" CACHE STRING "Debug options." FORCE)
@@ -31,7 +31,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-# add_subdirectory(core)
+add_subdirectory(core)
 add_subdirectory(frontends)
 
 # include(CPack)
