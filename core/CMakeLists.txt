@@ -8,6 +8,8 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Test REQUIRED)
 
+set(BIN_INSTALL_DIR         bin                 CACHE INTERNAL  "The subdirectory relative to the install prefix where binary files will be installed.")
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cutepaste_global.h.in ${CMAKE_CURRENT_BINARY_DIR}/cutepaste_global.h)
 
 include_directories(

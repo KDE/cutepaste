@@ -16,3 +16,10 @@ add_executable(cutepaste ${cutepaste_SRCS})
 target_link_libraries(cutepaste Qt5::Network)
 
 qt5_use_modules(cutepaste Network)
+
+install(TARGETS
+    cutepaste
+
+    DESTINATION ${BIN_INSTALL_DIR}
+    COMPONENT cutepastedesktop
+)
