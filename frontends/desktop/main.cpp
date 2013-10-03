@@ -72,21 +72,32 @@ int main(int argc, char **argv)
         QJsonParseError jsonParseError;
         QByteArray replyJsonByteArray = networkReplyScopedPointer->readAll();
         QJsonDocument replyJsonDocument = QJsonDocument::fromJson(replyJsonByteArray, &jsonParseError);
+        if (jsonParseError.error != QJsonParseError::NoError) {
+            qDebug() << "The json network reply is not valid json:" << jsonParseError.errorString();
+            QCoreApplication::quit();
+        }
+
         if (!replyJsonDocument.isObject()) {
-            qDebug() << "Reply error:" << jsonParseError.errorString();
-            return;
+            qDebug() << "The json network reply is not an object";
+            QCoreApplication::quit();
         }
         
         QJsonObject replyJsonObject = replyJsonDocument.object();
         QJsonValue resultValue = replyJsonObject.value(QStringLiteral("result"));
 
-        if (!resultValue.isObject())
+        if (!resultValue.isObject()) {
+            qDebug() << "The json network reply does not contain an object for the \"result\" key";
             QCoreApplication::quit();
+        }
 
         QJsonValue identifierValue = resultValue.toObject().value(QStringLiteral("id"));
 
-        if (!identifierValue.isString())
-            endl(standardOutputStream << baseUrlString << identifierValue.toString());
+        if (!identifierValue.isString()) {
+            qDebug() << "The json network reply does not contain a string for the \"id\" key";
+            QCoreApplication::quit();
+        }
+
+        endl(standardOutputStream << baseUrlString << '/' << identifierValue.toString());
 
         QCoreApplication::quit();
     });
