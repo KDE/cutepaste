@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::sslErrors, [&](QList<QSslError> networkReplySslErrors) {
         if (!networkReplySslErrors.isEmpty()) {
-            foreach (const QSslError &networkReplySslError, networkReplySslErrors)
+            for (auto &networkReplySslError: networkReplySslErrors)
                 endl(standardOutputStream << networkReplySslError.errorString());
         }
     });
