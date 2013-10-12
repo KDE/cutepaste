@@ -40,9 +40,9 @@ int main(int argc, char **argv)
     application.setOrganizationName("CutePaste");
     application.setApplicationName("CutePaste Desktop Console Frontend");
 
-    QTextStream standardOutputStream(stdout);
+    QTextStream standardOutputStream{stdout};
     QFile dataFile;
-    QString firstArgument = QCoreApplication::arguments().size() < 2 ? QString() : QCoreApplication::arguments().at(1);
+    QString firstArgument{QCoreApplication::arguments().size() < 2 ? QString() : QCoreApplication::arguments().at(1)};
     if (!firstArgument.isEmpty()) {
         dataFile.setFileName(firstArgument);
         dataFile.open(QIODevice::ReadOnly);
@@ -50,15 +50,15 @@ int main(int argc, char **argv)
         dataFile.open(stdin, QIODevice::ReadOnly);
     }
 
-    QByteArray pasteTextByteArray = dataFile.readAll();
+    QByteArray pasteTextByteArray{dataFile.readAll()};
 
     QJsonObject requestJsonObject;
     requestJsonObject.insert(QStringLiteral("data"), QString::fromUtf8(pasteTextByteArray));
     requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("text"));
 
-    QJsonDocument requestJsonDocument(requestJsonObject);
+    QJsonDocument requestJsonDocument{requestJsonObject};
 
-    QString baseUrlString = QStringLiteral("http://pastebin.kde.org");
+    QString baseUrlString{QStringLiteral("http://pastebin.kde.org")};
 
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
 
         QJsonParseError jsonParseError;
-        QByteArray replyJsonByteArray = networkReplyScopedPointer->readAll();
-        QJsonDocument replyJsonDocument = QJsonDocument::fromJson(replyJsonByteArray, &jsonParseError);
+        QByteArray replyJsonByteArray{networkReplyScopedPointer->readAll()};
+        QJsonDocument replyJsonDocument{QJsonDocument::fromJson(replyJsonByteArray, &jsonParseError)};
         if (jsonParseError.error != QJsonParseError::NoError) {
             qDebug() << "The json network reply is not valid json:" << jsonParseError.errorString();
             QCoreApplication::quit();
@@ -82,15 +82,15 @@ int main(int argc, char **argv)
             QCoreApplication::quit();
         }
         
-        QJsonObject replyJsonObject = replyJsonDocument.object();
-        QJsonValue resultValue = replyJsonObject.value(QStringLiteral("result"));
+        QJsonObject replyJsonObject{replyJsonDocument.object()};
+        QJsonValue resultValue{replyJsonObject.value(QStringLiteral("result"))};
 
         if (!resultValue.isObject()) {
             qDebug() << "The json network reply does not contain an object for the \"result\" key";
             QCoreApplication::quit();
         }
 
-        QJsonValue identifierValue = resultValue.toObject().value(QStringLiteral("id"));
+        QJsonValue identifierValue{resultValue.toObject().value(QStringLiteral("id"))};
 
         if (!identifierValue.isString()) {
             qDebug() << "The json network reply does not contain a string for the \"id\" key";
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
         }
     });
 
-    bool returnValue = application.exec();
+    int returnValue{application.exec()};
 
     dataFile.close();
     if (dataFile.error() != QFileDevice::NoError)
