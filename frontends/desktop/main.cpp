@@ -36,7 +36,7 @@
 
 int main(int argc, char **argv)
 {
-    QCoreApplication application(argc, argv);
+    QCoreApplication application{argc, argv};
     application.setOrganizationName("CutePaste");
     application.setApplicationName("CutePaste Desktop Console Frontend");
 
