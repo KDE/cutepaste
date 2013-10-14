@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 
     QNetworkAccessManager networkAccessManager;
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, requestJsonDocument.toJson()));
-    QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&]() {
+    QObject::connect(networkReplyScopedPointer.data(), &QNetworkReply::finished, [&] {
 
         QJsonParseError jsonParseError;
         QByteArray replyJsonByteArray{networkReplyScopedPointer->readAll()};
