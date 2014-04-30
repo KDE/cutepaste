@@ -31,8 +31,8 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QCoreApplication>
-#include <QCommandLineParser>
-#include <QCommandLineOption>
+
+#include <QDebug>
 
 int main(int argc, char **argv)
 {
@@ -40,42 +40,30 @@ int main(int argc, char **argv)
     application.setOrganizationName(R"("CutePaste")");
     application.setApplicationName(R"("CutePaste Desktop Console Frontend")");
 
-    QCommandLineParser parser;
-    parser.setApplicationDescription("CutePaste");
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.addPositionalArgument("file", "Content of file to send to online paste service.");
-
-    QCommandLineOption langOption(QStringList() << "l" << "lang", "Set language like text, diff, cpp, etc. Default is text.", "language", "text");
-    parser.addOption(langOption);
-    QCommandLineOption pasteServiceOption(QStringList() << "p" << "pasteService", "Where should the paste be send to. Defaults to http://pastebin.kde.org", "url", "http://pastebin.kde.org");
-    parser.addOption(pasteServiceOption);
-    parser.process(application);
-    const QStringList args = parser.positionalArguments();
-
     QTextStream standardOutputStream{stdout};
     QFile dataFile;
-    if (args.count() > 0 && QFile::exists(args.at(0))) {
-        dataFile.setFileName(args.at(0));
+    QString firstArgument{QCoreApplication::arguments().size() < 2 ? QString() : QCoreApplication::arguments().at(1)};
+    if (!firstArgument.isEmpty()) {
+        dataFile.setFileName(firstArgument);
         dataFile.open(QIODevice::ReadOnly);
     } else {
         dataFile.open(stdin, QIODevice::ReadOnly);
     }
 
-    QByteArray pasteTextByteArray{dataFile.readAll().trimmed()};
+    QByteArray pasteTextByteArray{dataFile.readAll()};
 
     QJsonObject requestJsonObject;
     requestJsonObject.insert(QStringLiteral("data"), QString::fromUtf8(pasteTextByteArray));
-    requestJsonObject.insert(QStringLiteral("language"), parser.value(langOption));
+    requestJsonObject.insert(QStringLiteral("language"), QStringLiteral("text"));
 
     QJsonDocument requestJsonDocument{requestJsonObject};
 
-    QString baseUrlString{parser.value(pasteServiceOption)};
+    QString baseUrlString{QStringLiteral(R"("http://pastebin.kde.org")")};
 
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, R"("application/json")");
-    networkRequest.setUrl(QUrl(baseUrlString + "/api/json/create"));
+    networkRequest.setUrl(QUrl(baseUrlString + R"("/api/json/create")"));
 
     QNetworkAccessManager networkAccessManager;
     QScopedPointer<QNetworkReply> networkReplyScopedPointer(networkAccessManager.post(networkRequest, requestJsonDocument.toJson()));
