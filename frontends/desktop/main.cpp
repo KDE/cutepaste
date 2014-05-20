@@ -72,6 +72,12 @@ int main(int argc, char **argv)
 
     QString baseUrlString{parser.value(pasteServiceOption)};
 
+    // If the -p (or --pasteService) option isn't provided, but the env variable CUTEPASTE_PASTE_SERVICE is, use that instead.
+    QByteArray serviceFromEnv = qgetenv("CUTEPASTE_PASTE_SERVICE").trimmed();
+    if(!parser.isSet(pasteServiceOption) && !serviceFromEnv.isEmpty()){
+        baseUrlString = serviceFromEnv;
+    }
+
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
     networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, R"("application/json")");
