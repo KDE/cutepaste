@@ -104,14 +104,14 @@ int main(int argc, char **argv)
         QJsonValue resultValue{replyJsonObject.value(QStringLiteral("result"))};
 
         if (!resultValue.isObject()) {
-            qDebug() << QString("The json network reply does not contain an object for the %1 key").arg(result);
+            qDebug() << "The json network reply does not contain an object for the \"result\" key";
             QCoreApplication::quit();
         }
 
         QJsonValue identifierValue{resultValue.toObject().value(QStringLiteral("id"))};
 
         if (!identifierValue.isString()) {
-            qDebug() << QString("The json network reply does not contain a string for the %1 key").arg(id);
+            qDebug() << "The json network reply does not contain a string for the \"id\" key";
             QCoreApplication::quit();
         }
 
