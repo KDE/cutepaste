@@ -37,8 +37,8 @@
 int main(int argc, char **argv)
 {
     QCoreApplication application{argc, argv};
-    application.setOrganizationName(R"("CutePaste")");
-    application.setApplicationName(R"("CutePaste Desktop Console Frontend")");
+    application.setOrganizationName("CutePaste");
+    application.setApplicationName("CutePaste Desktop Console Frontend");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("CutePaste");
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
     QNetworkRequest networkRequest;
     networkRequest.setAttribute(QNetworkRequest::DoNotBufferUploadDataAttribute, true);
-    networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, R"("application/json")");
+    networkRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     networkRequest.setUrl(QUrl(baseUrlString + "/api/json/create"));
 
     QNetworkAccessManager networkAccessManager;
@@ -91,12 +91,12 @@ int main(int argc, char **argv)
         QByteArray replyJsonByteArray{networkReplyScopedPointer->readAll()};
         QJsonDocument replyJsonDocument{QJsonDocument::fromJson(replyJsonByteArray, &jsonParseError)};
         if (jsonParseError.error != QJsonParseError::NoError) {
-            qDebug() << R"("The json network reply is not valid json:")" << jsonParseError.errorString();
+            qDebug() << "The json network reply is not valid json:" << jsonParseError.errorString();
             QCoreApplication::quit();
         }
 
         if (!replyJsonDocument.isObject()) {
-            qDebug() << R"("The json network reply is not an object")";
+            qDebug() << "The json network reply is not an object";
             QCoreApplication::quit();
         }
         
@@ -104,14 +104,14 @@ int main(int argc, char **argv)
         QJsonValue resultValue{replyJsonObject.value(QStringLiteral("result"))};
 
         if (!resultValue.isObject()) {
-            qDebug() << R"("The json network reply does not contain an object for the "result" key")";
+            qDebug() << QString("The json network reply does not contain an object for the %1 key").arg(result);
             QCoreApplication::quit();
         }
 
         QJsonValue identifierValue{resultValue.toObject().value(QStringLiteral("id"))};
 
         if (!identifierValue.isString()) {
-            qDebug() << R"("The json network reply does not contain a string for the "id" key")";
+            qDebug() << QString("The json network reply does not contain a string for the %1 key").arg(id);
             QCoreApplication::quit();
         }
 
